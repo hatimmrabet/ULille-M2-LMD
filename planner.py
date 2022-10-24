@@ -28,6 +28,8 @@ class planner :
             if hourparam.checkHour():
                 self.hour.append(hourparam)
         else:
+            if hourparam == '*':
+                self.hour.append(hourparam)
             if hourparam<24 and hourparam>=0:
                 self.hour.append(hourparam)
         return self
