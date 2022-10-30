@@ -1,9 +1,7 @@
 from crontab import CronTab
 
-
 class planner :
     ## a cron job object
-
     def __init__(self):
         self.task = ""
         self.hour = None
@@ -77,131 +75,60 @@ class planner :
         return self
 
     def __str__(self):
-        hour_string = ""
-        minute_string = ""
-        day_string = ""
-        month_string = ""
-        day_of_week_string = ""
-        if self.minute:
-            
-            minute_string=""
-            if isinstance(self.minute,tuple):
-                minute_string+= "every minute from "+ str(self.minute[0])+" to "+str(self.minute[1])
-            elif isinstance(self.minute,list):
-                minute_string+= "at minutes "
-                for i in self.minute:
-                    minute_string+=str(i)+","
-                minute_string=minute_string[:-1]
-            elif isinstance(self.minute,int):
-                minute_string+= "at minute "+ str(self.minute)
-            else:
-                minute_string="every minute"
-
-        if self.hour:
-        
-            hour_string=""
-            if isinstance(self.hour,tuple):
-                
-                hour_string+= "every hour from "+ str(self.hour[0]) + " to "+ str(self.hour[1])
-            elif isinstance(self.hour,list):
-                hour_string+= "at hours "
-                for i in self.hour:
-                    hour_string+=str(i)+","
-                hour_string=hour_string[:-1]
-            elif isinstance(self.hour,int):
-               
-                hour_string+= "at hour "+ str(self.hour)
-            else:
-                hour_string="every hour"
-
-      
-        if self.day:
-            day_string=""
-            
-            if isinstance(self.day,tuple):
-                day_string+= "every day from "+ str(self.day[0]) + " to "+ str(self.day[1])
-            elif isinstance(self.day,list):
-                day_string+= "at days "
-                for i in self.day:
-                    day_string+=str(i)+","
-                day_string=day_string[:-1]
-            elif isinstance(self.day,int):
-                day_string+= "at day "+ str(self.day)
-            else:
-                day_string="every day"
-
-        if self.month:
-            month_string=""
-            if isinstance(self.month,tuple):
-                month_string+= "every month from "+ str(self.month[0]) + " to "+ str(self.month[1])
-            elif isinstance(self.month,list):
-                month_string+= "at months "
-                for i in self.month:
-                    month_string+=str(i)+","
-                month_string=month_string[:-1]
-            elif isinstance(self.month,int):
-                month_string+= "at month "+ str(self.month)
-            else:
-                month_string="every month"
-
-        if self.day_of_week:
-            day_of_week_string=""
-            
-            if isinstance(self.day_of_week,tuple):
-                
-                day_of_week_string+= "every day_of_week from "+ str(self.day_of_week[0]) + " to "+ str(self.day_of_week[1])
-            elif isinstance(self.day_of_week,list):
-                day_of_week_string+= "at days_of_week "
-                for i in self.day_of_week:
-                    day_of_week_string+=str(i)+","
-                day_of_week_string=day_of_week_string[:-1]
-            elif isinstance(self.day_of_week,int):
-                day_of_week_string+= "at day_of_week "+ str(self.day_of_week)
-            else:
-                day_of_week_string="every day_of_week"
+        hour_string = affichage(self.hour, "hour")
+        minute_string = affichage(self.minute, "minute")
+        day_string = affichage(self.day, "day")
+        month_string = affichage(self.month, "month")
+        day_of_week_string = affichage(self.day_of_week, "day of week")
         return "Task: %s %s %s %s %s %s" % (self.task, hour_string, minute_string, day_string, month_string, day_of_week_string)
 
-def checkHour(hourparam):
-    if hourparam[0]<hourparam[1]:
-        if hourparam[0]>=0 and hourparam[1]<24:
+def affichage(param, field):
+    """
+    Affichage du parametre en une chaine de characteres
+    param: the field to display
+    field: the field name
+    """
+    if param:
+        ret=""
+        if isinstance(param,tuple):
+            ret+= "every "+field+" from "+ str(param[0])+" to "+str(param[1])
+        elif isinstance(param,list):
+            ret+= "at "+field+"s "
+            for i in param:
+                ret+=str(i)+","
+            ret=ret[:-1]
+        elif isinstance(param,int):
+            ret+= "at "+field+" "+ str(param)
+        else:
+            ret="every "+field
+        return ret
+    return ""
+
+def check(param, min, max):
+    if(param[0]<param[1]):
+        if param[0]>=min and param[1]<=max:
             return True
-    else:
-        return False
+    return False
+
+def checkHour(hourparam):
+    return check(hourparam,0,23)
 
 def checkMinute(minuteparam):
-    if minuteparam[0]<minuteparam[1]:
-        if minuteparam[0]>=0 and minuteparam[1]<60:
-            return True
-    else:
-        return False
+    return check(minuteparam, 0, 59)
 
 def checkDay(dayparam):
-    if dayparam[0]<dayparam[1]:
-        if dayparam[0]>0 and dayparam[1]<=31:
-            return True
-    else:
-        return False
+    return check(dayparam, 1, 31)
 
 def checkMonth(monthparam):
-    if monthparam[0]<monthparam[1]:
-        if monthparam[0]>=0 and monthparam[1]<=12:
-            return True
-    else:
-        return False
+    return check(monthparam,1,12)
 
 def checkDay_of_week(day_of_weekparam):
-    if day_of_weekparam[0]<day_of_weekparam[1]:
-        if day_of_weekparam[0]>=0 and day_of_weekparam[1]<7:
-            return True
-    else:
-        return False
-    
+    return check(day_of_weekparam,0,6)
 
 def main():
     p = planner()
-   
     # 15,45 0-6 */2 * * /usr/local/bin/tache-reguliere.sh
-    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([6,8,9]).Day_of_week(1).Month("*").Day((1,31))
+    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,23)).Minute((6,16)).Day_of_week(1).Month("*").Day((1,31))
     print(p)
 
 if __name__ == "__main__":
