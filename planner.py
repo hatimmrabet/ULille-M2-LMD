@@ -9,73 +9,42 @@ class planner :
         self.day = None
         self.month = None
         self.day_of_week = None
-        self.cron = CronTab()
 
     def Task(self, task):
         self.task = task
         return self
 
-    def Hour(self, hourparam):
-        if isinstance(hourparam, list) or isinstance(hourparam, tuple):
-            if check(hourparam,0,23):
-                self.hour=hourparam
-        else:
-            if hourparam == '*':
-                self.hour=hourparam
-            elif hourparam<24 and hourparam>=0:
-                self.hour=hourparam
+    def Hour(self, param):
+        if check(param,getMaxMin("hour")[0],getMaxMin("hour")[1]):
+            self.hour=param
         return self
 
-    def Minute(self, minuteparam):
-        if isinstance(minuteparam, list) or isinstance(minuteparam, tuple):
-            if check(minuteparam, 0, 59):
-                self.minute=minuteparam
-        else:
-            if minuteparam == '*':
-                self.minute=minuteparam
-            elif minuteparam<=60 and minuteparam>0:
-                self.minute=minuteparam
+    def Minute(self, param):
+        if check(param,getMaxMin("minute")[0],getMaxMin("minute")[1]):
+            self.minute = param
         return self
     
-    def Day(self, dayparam):
-        if isinstance(dayparam, list) or isinstance(dayparam, tuple):
-            if check(dayparam, 1, 31):
-                self.day=dayparam
-        else:
-            if dayparam == '*':
-                self.day=dayparam
-            elif dayparam<=31 and dayparam>0:
-                self.day=dayparam
+    def Day(self, param):
+        if check(param,getMaxMin("day")[0],getMaxMin("day")[1]):
+            self.day = param
         return self
     
-    def Month(self, monthparam):
-        if isinstance(monthparam, list) or isinstance(monthparam, tuple):
-            if check(monthparam,1,12):
-                self.month=monthparam
-        else:
-            if monthparam == '*':
-                self.month=monthparam
-            elif monthparam<=12 and monthparam>0:
-                self.month=monthparam
+    def Month(self, param):
+        if check(param,getMaxMin("month")[0],getMaxMin("month")[1]):
+            self.month = param
         return self
 
-    def Day_of_week(self, day_of_week):
-        if isinstance(day_of_week, list) or isinstance(day_of_week, tuple):
-            if check(day_of_week,0,6):
-                self.day_of_week=day_of_week
-        else:
-            if day_of_week == '*':
-                self.day_of_week=day_of_week
-            elif day_of_week<=7 and day_of_week>0:
-                self.day_of_week=day_of_week
+    def Day_of_week(self, param):
+        if check(param,getMaxMin("day_of_week")[0],getMaxMin("day_of_week")[1]):
+            self.day_of_week = param
         return self
 
     def affichageCron(self):
-        ret = affichageCron(self.minute,"minute")+" "
-        ret += affichageCron(self.hour,"hour")+" "
-        ret += affichageCron(self.day,"day")+" "
-        ret += affichageCron(self.month,"month")+" "
-        ret += affichageCron(self.day_of_week,"day_of_week")+" "
+        ret = affichageCron(self.minute,"minute")
+        ret += affichageCron(self.hour,"hour")
+        ret += affichageCron(self.day,"day")
+        ret += affichageCron(self.month,"month")
+        ret += affichageCron(self.day_of_week,"day_of_week")
         ret += self.task
         return ret
         
@@ -88,9 +57,15 @@ class planner :
         return "Task: %s %s %s %s %s %s" % (self.task, hour_string, minute_string, day_string, month_string, day_of_week_string)
 
 def check(param, min, max):
-    if(param[0]<param[1]):
-        if param[0]>=min and param[1]<=max:
+    if isinstance(param, list) or isinstance(param, tuple):
+        if(param[0]<param[1]):
+            if param[0]>=min and param[1]<=max:
+                return True
+    elif isinstance(param, int):
+        if param>=min and param<=max:
             return True
+    elif param =="*":
+        return True
     return False
 
 def affichageText(param, field):
@@ -135,6 +110,7 @@ def affichageCron(param, field):
             ret=ret[:-1]
         elif isinstance(param,int):
             ret+= str(param)
+        ret += " "
     return ret
 
 def getMaxMin(field):
@@ -157,7 +133,7 @@ def getMaxMin(field):
 
 if __name__ == "__main__":
     p = planner()
-    # 15,45 0-6 */2 * * /usr/local/bin/tache-reguliere.sh
-    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,22)).Minute((6,16)).Day_of_week(1).Month("*").Day((1,31))
+    # 15,45 0-6 * * * /usr/local/bin/tache-reguliere.sh
+    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([15,45]).Day((1,31)).Day_of_week((0,6)).Month("*")
     print(p)
     print(p.affichageCron())
