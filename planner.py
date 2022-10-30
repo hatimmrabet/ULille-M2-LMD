@@ -1,7 +1,6 @@
-from datetime import datetime
-from crontab import CronTab
+from datetime import datetime, timedelta
 
-class planner :
+class Planner :
     ## a cron job object
     def __init__(self):
         self.task = ""
@@ -61,6 +60,15 @@ class planner :
         if self.day_of_week is not None and not checkIsPlannedAt(self.day_of_week, date.weekday()):
             return False
         return True
+
+    def getPlannedDates(self, start : datetime, end : datetime):
+        dates = []
+        date = start
+        while date < end :
+            if self.isPlannedAt(date):
+                dates.append(date.strftime("%Y-%m-%d %H:%M"))
+            date = date + timedelta(days=1)
+        return dates
 
     def __str__(self):
         hour_string = affichageText(self.hour, "hour")
@@ -165,13 +173,21 @@ def getMaxMin(field):
 
 
 if __name__ == "__main__":
-    p = planner()
-    # 15,45 0-6 * * 0-2 /usr/local/bin/tache-reguliere.sh
-    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([15,45]).Day((1,31)).Month("*").Day_of_week((0,2))
-    print(p)
+    p = Planner()
+
+    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([15,45]).Day((1,15)).Month("*").Day_of_week((0,2))
+    # afficher une planification au format attendu par cron
+    # 15,45 0-6 1-15 * 0-2 /usr/local/bin/tache-reguliere.sh
     print(p.affichageCron())
+    # au format textuel
+    print(p)
+
+    # déterminer si une tâche est planifiée ou pas à une date/heure/minute donnée,
     mydate = datetime(2020, 12, 1, 4, 45)
     print(mydate,":",p.isPlannedAt(mydate))
     # print(mydate.weekday()) # to check the day of week
     wrongdate = datetime(2022, 12, 1, 4, 45)
     print(wrongdate,":",p.isPlannedAt(wrongdate))
+
+    # les prochaines dates où la tâche est planifiée
+    print(p.getPlannedDates(mydate, mydate+timedelta(days=18, hours=6, minutes=10)))
