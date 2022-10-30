@@ -17,7 +17,7 @@ class planner :
 
     def Hour(self, hourparam):
         if isinstance(hourparam, list) or isinstance(hourparam, tuple):
-            if checkHour(hourparam):
+            if check(hourparam,0,23):
                 self.hour=hourparam
         else:
             if hourparam == '*':
@@ -25,10 +25,10 @@ class planner :
             elif hourparam<24 and hourparam>=0:
                 self.hour=hourparam
         return self
-    
+
     def Minute(self, minuteparam):
         if isinstance(minuteparam, list) or isinstance(minuteparam, tuple):
-            if checkMinute(minuteparam):
+            if check(minuteparam, 0, 59):
                 self.minute=minuteparam
         else:
             if minuteparam == '*':
@@ -38,11 +38,9 @@ class planner :
         return self
     
     def Day(self, dayparam):
-        print(isinstance(dayparam, tuple))
         if isinstance(dayparam, list) or isinstance(dayparam, tuple):
-            if checkDay(dayparam):
+            if check(dayparam, 1, 31):
                 self.day=dayparam
-                print(self.day)
         else:
             if dayparam == '*':
                 self.day=dayparam
@@ -52,7 +50,7 @@ class planner :
     
     def Month(self, monthparam):
         if isinstance(monthparam, list) or isinstance(monthparam, tuple):
-            if checkMonth(monthparam):
+            if check(monthparam,1,12):
                 self.month=monthparam
         else:
             if monthparam == '*':
@@ -60,12 +58,10 @@ class planner :
             elif monthparam<=12 and monthparam>0:
                 self.month=monthparam
         return self
-        
 
     def Day_of_week(self, day_of_week):
         if isinstance(day_of_week, list) or isinstance(day_of_week, tuple):
-            if checkDay_of_week(day_of_week):
-                
+            if check(day_of_week,0,6):
                 self.day_of_week=day_of_week
         else:
             if day_of_week == '*':
@@ -110,26 +106,9 @@ def check(param, min, max):
             return True
     return False
 
-def checkHour(hourparam):
-    return check(hourparam,0,23)
 
-def checkMinute(minuteparam):
-    return check(minuteparam, 0, 59)
-
-def checkDay(dayparam):
-    return check(dayparam, 1, 31)
-
-def checkMonth(monthparam):
-    return check(monthparam,1,12)
-
-def checkDay_of_week(day_of_weekparam):
-    return check(day_of_weekparam,0,6)
-
-def main():
+if __name__ == "__main__":
     p = planner()
     # 15,45 0-6 */2 * * /usr/local/bin/tache-reguliere.sh
     p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,23)).Minute((6,16)).Day_of_week(1).Month("*").Day((1,31))
     print(p)
-
-if __name__ == "__main__":
-    main()
