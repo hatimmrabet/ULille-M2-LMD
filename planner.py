@@ -1,11 +1,12 @@
+from datetime import datetime
 from crontab import CronTab
 
 class planner :
     ## a cron job object
     def __init__(self):
         self.task = ""
-        self.hour = None
         self.minute = None
+        self.hour = None
         self.day = None
         self.month = None
         self.day_of_week = None
@@ -48,6 +49,19 @@ class planner :
         ret += self.task
         return ret
         
+    def isPlannedAt(self, date : datetime):
+        if self.minute is not None and not checkIsPlannedAt(self.minute, date.minute):
+            return False
+        if self.hour is not None and not checkIsPlannedAt(self.hour, date.hour):
+            return False
+        if self.day is not None and not checkIsPlannedAt(self.day, date.day):
+            return False
+        if self.month is not None and not checkIsPlannedAt(self.month, date.month):
+            return False
+        if self.day_of_week is not None and not checkIsPlannedAt(self.day_of_week, date.weekday()):
+            return False
+        return True
+
     def __str__(self):
         hour_string = affichageText(self.hour, "hour")
         minute_string = affichageText(self.minute, "minute")
@@ -67,6 +81,23 @@ def check(param, min, max):
     elif param =="*":
         return True
     return False
+
+def checkIsPlannedAt(param, value):
+    """
+    param: the field to check
+    value: the value to compare
+    field: the field name
+    """
+    if isinstance(param, list):
+        return value in param
+    elif isinstance(param, tuple):
+        return value >= param[0] and value <= param[1]
+    elif isinstance(param, int):
+        return value == param
+    elif param =="*":
+        return True
+    return False
+    
 
 def affichageText(param, field):
     """
@@ -109,8 +140,10 @@ def affichageCron(param, field):
                 ret+=str(i)+","
             ret=ret[:-1]
         elif isinstance(param,int):
-            ret+= str(param)
-        ret += " "
+            ret+=str(param)
+        elif param=="*":
+            ret+="*"
+        ret+=" "
     return ret
 
 def getMaxMin(field):
@@ -133,7 +166,12 @@ def getMaxMin(field):
 
 if __name__ == "__main__":
     p = planner()
-    # 15,45 0-6 * * * /usr/local/bin/tache-reguliere.sh
-    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([15,45]).Day((1,31)).Day_of_week((0,6)).Month("*")
+    # 15,45 0-6 * * 0-2 /usr/local/bin/tache-reguliere.sh
+    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([15,45]).Day((1,31)).Month("*").Day_of_week((0,2))
     print(p)
     print(p.affichageCron())
+    mydate = datetime(2020, 12, 1, 4, 45)
+    print(mydate,":",p.isPlannedAt(mydate))
+    # print(mydate.weekday()) # to check the day of week
+    wrongdate = datetime(2022, 12, 1, 4, 45)
+    print(wrongdate,":",p.isPlannedAt(wrongdate))
