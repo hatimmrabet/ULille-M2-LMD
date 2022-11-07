@@ -47,7 +47,5 @@ def affichageCron(param, field):
             ret=ret[:-1]
         elif isinstance(param,int):
             ret+=str(param)
-        elif param=="*":
-            ret+="*"
         ret+=" "
     return ret

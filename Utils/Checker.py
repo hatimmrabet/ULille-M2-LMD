@@ -12,8 +12,6 @@ def check(param, min, max):
     elif isinstance(param, int):
         if param>=min and param<=max:
             return True
-    elif param =="*":
-        return True
     return False
 
 def checkIsPlannedAt(param, value):
@@ -28,8 +26,6 @@ def checkIsPlannedAt(param, value):
         return value >= param.start and value <= param.end and (value - param.start) % param.step == 0
     elif isinstance(param, int):
         return value == param
-    elif param =="*":
-        return True
     return False
     
 def getMaxMin(field):
