@@ -1,4 +1,13 @@
 # LMD: TP1 - Expressions à la cron
 
-Dans notre programme, on a utiliser les ``tuple`` pour les intervalles de temps. Et les `list` pour les valeurs individuelles.
-Et on a aussi utilisé le design pattern `Fluent Interface` pour les méthodes de la class `Planner`
+## Arborecense
+
+Package Model:
+Interval => permet de gerer les intervalles de temps
+Planner => Le cron
+
+Package Utils:
+Checker => possede nos verificateurs de coherence de temps
+Printer => affichage de notre cron
+
+our les méthodes de la class `Planner`
