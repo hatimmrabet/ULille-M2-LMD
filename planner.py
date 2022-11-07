@@ -1,5 +1,11 @@
 from datetime import datetime, timedelta
 
+class Interval:
+    def __init__(self, start, end, step=1):
+        self.start = start
+        self.end = end
+        self.step = step
+
 class Planner :
     ## a cron job object
     def __init__(self):
@@ -67,7 +73,7 @@ class Planner :
         while date < end :
             if self.isPlannedAt(date):
                 dates.append(date.strftime("%Y-%m-%d %H:%M"))
-            date = date + timedelta(days=1)
+            date = date + timedelta(minutes=1)
         return dates
 
     def __str__(self):
@@ -79,9 +85,13 @@ class Planner :
         return "Task: %s %s %s %s %s %s" % (self.task, hour_string, minute_string, day_string, month_string, day_of_week_string)
 
 def check(param, min, max):
-    if isinstance(param, list) or isinstance(param, tuple):
+    if isinstance(param, list):
         if(param[0]<param[1]):
             if param[0]>=min and param[1]<=max:
+                return True
+    elif isinstance(param, Interval):
+        if param.start < param.end:
+            if param.start >= min and param.end <= max:
                 return True
     elif isinstance(param, int):
         if param>=min and param<=max:
@@ -98,8 +108,8 @@ def checkIsPlannedAt(param, value):
     """
     if isinstance(param, list):
         return value in param
-    elif isinstance(param, tuple):
-        return value >= param[0] and value <= param[1]
+    elif isinstance(param, Interval):
+        return value >= param.start and value <= param.end and (value - param.start) % param.step == 0
     elif isinstance(param, int):
         return value == param
     elif param =="*":
@@ -115,8 +125,11 @@ def affichageText(param, field):
     """
     if param:
         ret=""
-        if isinstance(param,tuple):
-            ret+= "every "+field+" from "+ str(param[0])+" to "+str(param[1])
+        if isinstance(param,Interval):
+            if(param.step==1):
+                ret+= "every "+field+" from "+ str(param.start)+" to "+str(param.end)
+            else:
+                ret+= "every "+str(param.step)+" "+field+" from "+ str(param.start)+" to "+str(param.end)
         elif isinstance(param,list):
             ret+= "at "+field+"s "
             for i in param:
@@ -138,11 +151,13 @@ def affichageCron(param, field):
     if param:
         max = getMaxMin(field)[1]
         min = getMaxMin(field)[0]
-        if isinstance(param,tuple):
-            if param[0]==min and param[1]==max:
+        if isinstance(param,Interval):
+            if param.start==min and param.end==max:
                 ret+="*"
             else:
-                ret+= str(param[0])+"-"+str(param[1])
+                ret+= str(param.start)+"-"+str(param.end)
+            if param.step!=1:
+                ret+="/"+str(param.step)
         elif isinstance(param,list):
             for i in param:
                 ret+=str(i)+","
@@ -174,20 +189,20 @@ def getMaxMin(field):
 
 if __name__ == "__main__":
     p = Planner()
-
-    p.Task('/usr/local/bin/tache-reguliere.sh').Hour((0,6)).Minute([15,45]).Day((1,15)).Month("*").Day_of_week((0,2))
+    p.Task('/usr/local/bin/tache-reguliere.sh').Hour(Interval(0,6,2)).Minute([15,45]).Day(Interval(1,15)).Month("*").Day_of_week(Interval(0,2))
+    
     # afficher une planification au format attendu par cron
-    # 15,45 0-6 1-15 * 0-2 /usr/local/bin/tache-reguliere.sh
+    # 15,45 0-6/2 1-15 * 0-2 /usr/local/bin/tache-reguliere.sh
     print(p.affichageCron())
     # au format textuel
     print(p)
 
     # déterminer si une tâche est planifiée ou pas à une date/heure/minute donnée,
     mydate = datetime(2020, 12, 1, 4, 45)
-    print(mydate,":",p.isPlannedAt(mydate))
+    print("correct => ",mydate,":",p.isPlannedAt(mydate))
     # print(mydate.weekday()) # to check the day of week
     wrongdate = datetime(2022, 12, 1, 4, 45)
-    print(wrongdate,":",p.isPlannedAt(wrongdate))
+    print("wrong => ",wrongdate,":",p.isPlannedAt(wrongdate))
 
     # les prochaines dates où la tâche est planifiée
-    print(p.getPlannedDates(mydate, mydate+timedelta(days=18, hours=6, minutes=10)))
+    print(p.getPlannedDates(mydate, mydate+timedelta(days=8, hours=6, minutes=10)))
