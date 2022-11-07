@@ -3,7 +3,7 @@ from Model.Planner import Planner
 from datetime import datetime, timedelta
 
 p = Planner()
-p.Task('/usr/local/bin/tache-reguliere.sh').Hours(Range(0,6,2)).Minutes([15,45]).Days(Range(1,15)).Days_of_week(Range(0,2))
+p.Task('/usr/local/bin/tache-reguliere.sh').Hours(Range(start=0,end=6,step=2)).Minutes([15,45]).Days(Range(start=1,end=15)).Days_of_week(Range(0,2))
 
 # afficher une planification au format attendu par cron
 # 15,45 0-6/2 1-15 * 0-2 /usr/local/bin/tache-reguliere.sh
