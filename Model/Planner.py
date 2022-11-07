@@ -1,42 +1,43 @@
 from datetime import datetime, timedelta
 from Utils.Checker import *
 from Utils.Printer import *
+from Model.Range import Range
 
 class Planner :
     ## a cron job object
     def __init__(self):
         self.task = ""
-        self.minute = None
-        self.hour = None
-        self.day = None
-        self.month = None
-        self.day_of_week = None
+        self.minute = Range(0,59)
+        self.hour = Range(0,23)
+        self.day = Range(1,31)
+        self.month = Range(1,12)
+        self.day_of_week = Range(0,6)
 
     def Task(self, task):
         self.task = task
         return self
 
-    def Hour(self, param):
+    def Hours(self, param):
         if check(param,getMaxMin("hour")[0],getMaxMin("hour")[1]):
             self.hour=param
         return self
 
-    def Minute(self, param):
+    def Minutes(self, param):
         if check(param,getMaxMin("minute")[0],getMaxMin("minute")[1]):
             self.minute = param
         return self
     
-    def Day(self, param):
+    def Days(self, param):
         if check(param,getMaxMin("day")[0],getMaxMin("day")[1]):
             self.day = param
         return self
     
-    def Month(self, param):
+    def Months(self, param):
         if check(param,getMaxMin("month")[0],getMaxMin("month")[1]):
             self.month = param
         return self
 
-    def Day_of_week(self, param):
+    def Days_of_week(self, param):
         if check(param,getMaxMin("day_of_week")[0],getMaxMin("day_of_week")[1]):
             self.day_of_week = param
         return self

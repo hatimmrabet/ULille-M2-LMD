@@ -1,11 +1,11 @@
-from Model.Interval import Interval
+from Model.Range import Range
 
 def check(param, min, max):
     if isinstance(param, list):
         if(param[0]<param[1]):
             if param[0]>=min and param[1]<=max:
                 return True
-    elif isinstance(param, Interval):
+    elif isinstance(param, Range):
         if param.start < param.end:
             if param.start >= min and param.end <= max:
                 return True
@@ -24,7 +24,7 @@ def checkIsPlannedAt(param, value):
     """
     if isinstance(param, list):
         return value in param
-    elif isinstance(param, Interval):
+    elif isinstance(param, Range):
         return value >= param.start and value <= param.end and (value - param.start) % param.step == 0
     elif isinstance(param, int):
         return value == param

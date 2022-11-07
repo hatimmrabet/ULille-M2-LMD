@@ -8,7 +8,7 @@ def affichageText(param, field):
     """
     if param:
         ret=""
-        if isinstance(param,Interval):
+        if isinstance(param,Range):
             if(param.step==1):
                 ret+= "every "+field+" from "+ str(param.start)+" to "+str(param.end)
             else:
@@ -34,7 +34,7 @@ def affichageCron(param, field):
     if param:
         max = getMaxMin(field)[1]
         min = getMaxMin(field)[0]
-        if isinstance(param,Interval):
+        if isinstance(param,Range):
             if param.start==min and param.end==max:
                 ret+="*"
             else:
