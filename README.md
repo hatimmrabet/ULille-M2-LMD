@@ -10,4 +10,3 @@ Package Utils:
 Checker => possede nos verificateurs de coherence de temps
 Printer => affichage de notre cron
 
-our les méthodes de la class `Planner`
