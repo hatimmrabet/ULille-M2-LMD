@@ -2,6 +2,9 @@ package lmd.config;
 import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
+import lmd.config.model.Non;
+import lmd.config.model.NonDefs;
+
 import static org.petitparser.parser.primitive.CharacterParser.*;
 
 public class App 
