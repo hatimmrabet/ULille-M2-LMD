@@ -29,6 +29,7 @@ def affichageCron(param, field):
     """
     Affichage du parametre en une chaine de characteres de cron
     param: the field to display
+    field: the field name
     """
     ret=""
     if param:

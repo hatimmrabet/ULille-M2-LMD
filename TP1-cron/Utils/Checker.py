@@ -18,7 +18,6 @@ def checkIsPlannedAt(param, value):
     """
     param: the field to check
     value: the value to compare
-    field: the field name
     """
     if isinstance(param, list):
         return value in param
