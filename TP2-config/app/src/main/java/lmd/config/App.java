@@ -17,7 +17,7 @@ public class App
         Result id2 = id.parse("f12");
         System.out.println(id1.get());
         System.out.println(id2.get());
-        String content = FileManager.getFileContent("/Users/tarek/Desktop/LMD/lmd-tp/TP2-config/app/config.non");
+        String content = FileManager.getFileContent("./config.non");
         System.out.println(content);
     }
 }
