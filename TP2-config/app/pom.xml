@@ -20,6 +20,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.github.petitparser</groupId>
+      <artifactId>petitparser-core</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.petitparser</groupId>
+      <artifactId>petitparser</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
