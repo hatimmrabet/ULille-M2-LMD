@@ -15,9 +15,9 @@ public class App
         Parser id = letter().seq(letter().or(digit()).star());
         Result id1 = id.parse("yeah");
         Result id2 = id.parse("f12");
-        System.out.println(id1.get());
-        System.out.println(id2.get());
+        // System.out.println(id1.get());
+        // System.out.println(id2.get());
         String content = FileManager.getFileContent("./config.non");
-        System.out.println(content);
+        NonDefs nonDefs = Non.fromString(content);
     }
 }

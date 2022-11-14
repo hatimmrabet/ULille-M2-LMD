@@ -18,8 +18,10 @@ public class NonDefs {
     }
 
     public Non at(String id) {
-        //TODO implement
-        return null;
+        Non non = new Non();
+        non.setId(id);
+
+        return non;
     }
     
 }
