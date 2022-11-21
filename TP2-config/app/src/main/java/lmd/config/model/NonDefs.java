@@ -15,6 +15,15 @@ public class NonDefs {
         return nonObjects;
     }
 
+    public NonObject getNonObject(String name) {
+        for(NonObject nonObj : nonObjects) {
+            if(nonObj.getName().equals(name)) {
+                return nonObj;
+            }
+        }
+        return null;
+    }
+
     public void setNonObjects(List<NonObject> nonObjects) {
         this.nonObjects = nonObjects;
     }

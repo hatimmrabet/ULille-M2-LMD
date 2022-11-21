@@ -6,7 +6,6 @@ import org.petitparser.context.Result;
 import org.petitparser.parser.Parser;
 
 import lmd.config.field.Field;
-import lmd.config.field.StringField;
 import lmd.config.model.Non;
 import lmd.config.model.NonDefs;
 import lmd.config.model.NonObject;
@@ -26,7 +25,7 @@ public class App
         for(NonObject nonObj : nonDefs.getNonObjects()) {
             System.out.println(nonObj.getName());
             for(Field field : nonObj.getfields()) {
-                System.out.println(field.getName() + " : " + field.getValue());
+                System.out.println(field.getName() + " | " + field.getValue());
             }
         }
     }

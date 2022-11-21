@@ -12,11 +12,21 @@ public class StringField implements Field {
         this.value = value;
     }
 
+    public StringField(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    
     @Override
     public String getName() {
         return name;
     }
-
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     @Override
     public String getValue() {
         return value;

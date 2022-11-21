@@ -1,8 +1,6 @@
 package lmd.config.model;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import lmd.config.field.Field;

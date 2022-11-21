@@ -3,8 +3,8 @@ univ:
 .domain 'exemple.tld'
 
 student:
-.name .login
 .mail .login '.etu@' univ.domain
+.name .login
 .login @
 
 alice: student
