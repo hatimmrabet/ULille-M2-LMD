@@ -1,20 +1,26 @@
 package lmd.config.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NonDefs {
 
-    private String content;
+    private List<NonObject> nonObjects;
 
-    public NonDefs() {        
-    }
-    public NonDefs(String content) {
-        this.content = content;
+    public NonDefs() {
+        nonObjects = new ArrayList<>();
     }
 
-    public String getContent() {
-        return content;
+    public List<NonObject> getNonObjects() {
+        return nonObjects;
     }
-    public void setContent(String content) {
-        this.content = content;
+
+    public void setNonObjects(List<NonObject> nonObjects) {
+        this.nonObjects = nonObjects;
+    }
+
+    public void addNonObject(NonObject nonObject) {
+        nonObjects.add(nonObject);
     }
 
     public Non at(String id) {
