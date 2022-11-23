@@ -1,17 +1,12 @@
 package lmd.config.field;
 
-public class ReferenceField implements Field {
-
+public class AtField implements Field {
+    
     private String name;
-    private String refName;
     private String value;
+    private Field field;
 
-    public ReferenceField() {
-    }
-
-    public ReferenceField(String name, String refName) {
-        this.name = name;
-        this.refName = refName;
+    public AtField() {
     }
 
     @Override
@@ -32,13 +27,12 @@ public class ReferenceField implements Field {
         this.value = value;
     }
 
-    public String getRefName() {
-        return refName;
+    public Field getField() {
+        return field;
     }
 
-    public void setRefName(String refName) {
-        this.refName = refName;
+    public void setField(Field field) {
+        this.field = field;
     }
 
-   
 }

@@ -8,7 +8,8 @@ import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
 
 import lmd.config.field.Field;
-import lmd.config.field.ReferenceField;
+import lmd.config.field.AtField;
+import lmd.config.field.DotField;
 import lmd.config.field.StringField;
 
 public class Non {
@@ -59,26 +60,26 @@ public class Non {
                 while (i < lines.length - 1 && line.startsWith(".")) {
                     // creer les fields
                     String fieldStr = fieldParser.flatten().parse(line).get().toString();
+                    fieldStr = fieldStr.replace(".","");
                     String valueStr = line.substring(fieldStr.length() + 1).trim();
                     // switch parser based on field value
                     if (stringParser.parse(valueStr).isSuccess()) {
                         valueStr = stringParser.flatten().parse(valueStr).get().toString();
                         valueStr = valueStr.replaceAll("\'", "");
-                        fieldStr = fieldStr.replace(".","");
                         nonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
                     }
                     else if(fieldParser.end("\n").parse(valueStr).isSuccess()) {
-                        fieldStr = fieldStr.replace(".","");
                         // valueStr = valueStr.replace(".","");
-                        ReferenceField refField = new ReferenceField(fieldStr, valueStr);
-                        refField.setValue("not implemented");
-                        nonObj.addField(fieldStr, refField);
+                        DotField dotField = new DotField();
+                        dotField.setName(fieldStr);
+                        dotField.setValue(valueStr);
+                        nonObj.addField(fieldStr, dotField);
                     } else if(arobaseParser.parse(valueStr).isSuccess()) {
-                        fieldStr = fieldStr.replace(".","");
                         // valueStr = valueStr.replace("@", idStr);
-                        ReferenceField refField = new ReferenceField(fieldStr, valueStr);
-                        refField.setValue("not implemented");
-                        nonObj.addField(fieldStr, refField);
+                        AtField atField = new AtField();
+                        atField.setName(fieldStr);
+                        atField.setValue(valueStr);
+                        nonObj.addField(fieldStr, atField);
                     } else {
                         System.out.println("Error parsing field : " + fieldStr + " : " + valueStr);
                     }
@@ -95,40 +96,61 @@ public class Non {
                 String[] instanceStrSplit = instanceStr.split(" ");
                 String idStr = instanceStrSplit[0];
                 String instanceName = instanceStrSplit[1];
-                NonObject nonObj = new NonObject();
-                nonObj.setName(idStr);
-                NonObject instance = nonDefs.getNonObject(instanceName);
-                for(Field field : instance.getfields()) {
-                    if(field instanceof ReferenceField) {
-                        ReferenceField myRefField = new ReferenceField();
-                        ReferenceField refField = (ReferenceField) field;
-                        String refFieldName = refField.getRefName();
-                        myRefField.setName(refField.getName());
-                        myRefField.setRefName(refFieldName);
-                        if(refFieldName.startsWith("@")) {
-                            refFieldName = refFieldName.replace("@", idStr);
-                            myRefField.setValue(refFieldName);
-                        } 
-                        if(refFieldName.startsWith(".")) {
-                            refFieldName = refFieldName.replace(".", "");
-                            for(Field f : instance.getfields()) {
-                                if(f.getName().equals(refFieldName)) {
-                                    myRefField.setRefName(f.getName());
-                                    myRefField.setValue(((ReferenceField) f).getRefName());
-                                }
-                            }
-                        }
-                        nonObj.addField(field.getName(), myRefField);
+                NonObject newNonObj = new NonObject();
+                newNonObj.setName(idStr);
+                NonObject superObj = nonDefs.getNonObject(instanceName);
+                for(Field field : superObj.getfields()) {
+                    if(field instanceof DotField) {
+                        DotField dotField = (DotField) field;
+                        DotField newDotField = new DotField();
+                        newDotField.setName(dotField.getName());
+                        newDotField.setValue(returnValue(superObj, dotField, idStr));
+                        // for(Field subField : superObj.getfields()) {
+                        //     if(("."+subField.getName()).equals(dotField.getValue())) {
+                        //         newDotField.setValue(subField.getValue());
+                        //         break;
+                        //     }
+                        // }
+                        newNonObj.addField(field.getName(), newDotField);
                     }
-                    else {
-                        nonObj.addField(field.getName(), field);
+                    if(field instanceof AtField) {
+                        AtField atField = (AtField) field;
+                        AtField newAtField = new AtField();
+                        newAtField.setName(atField.getName());
+                        newAtField.setValue(idStr);
+                        newNonObj.addField(field.getName(), newAtField);
                     }
                 }
-                nonDefs.addNonObject(nonObj);
+                nonDefs.addNonObject(newNonObj);
             }
         }
-
         return nonDefs;
+    }
+
+    public static String returnValue(NonObject superObj, Field field, String idStr)
+    {
+        String value = field.getValue();
+        if(field instanceof DotField) {
+            DotField dotField = (DotField) field;
+            for(Field subField : superObj.getfields()) {
+                if(("."+subField.getName()).equals(dotField.getValue())) {
+                    if(subField instanceof DotField) {
+                        value = returnValue(superObj, subField, idStr);
+                    }
+                    else if(subField instanceof AtField) {
+                        value = idStr;
+                    }
+                    else {
+                        value = subField.getValue();
+                    }
+                    break;
+                }
+            }
+        }
+        if(field instanceof AtField) {
+            return idStr;
+        }
+        return value;
     }
 
     public String get(String champs) {
