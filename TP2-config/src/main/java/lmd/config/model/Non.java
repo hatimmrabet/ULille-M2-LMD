@@ -56,8 +56,8 @@ public class Non {
                 NonObject nonObj = new NonObject();
                 nonObj.setName(idStr);
                 i++;
-                line = lines[i];
-                while (i < lines.length - 1 && line.startsWith(".")) {
+                while (i < lines.length && lines[i].startsWith(".")) {
+                    line = lines[i];
                     // creer les fields
                     String fieldStr = fieldParser.flatten().parse(line).get().toString();
                     fieldStr = fieldStr.replace(".","");
@@ -84,7 +84,6 @@ public class Non {
                         System.out.println("Error parsing field : " + fieldStr + " : " + valueStr);
                     }
                     i++;
-                    line = lines[i];
                 }
                 nonDefs.addNonObject(nonObj);
             }
@@ -118,15 +117,13 @@ public class Non {
                 }
                 // verifier s'il y a des champs à modifier apres
                 i++;
-                System.out.println("===> "+lines[i]);
-                line = lines[i];
-                if(line.startsWith(".")) {
-                    while (i < lines.length - 1 && line.startsWith(".")) {
+                if(lines[i].startsWith(".")) {
+                    while (i < lines.length && lines[i].startsWith(".")) {
+                        line = lines[i];
                         // creer les fields
                         String fieldStr = fieldParser.flatten().parse(line).get().toString();
                         fieldStr = fieldStr.replace(".","");
                         String valueStr = line.substring(fieldStr.length() + 1).trim();
-                        System.out.println("===> "+fieldStr+" : "+valueStr);
                         // switch parser based on field value
                         if (stringParser.parse(valueStr).isSuccess()) {
                             valueStr = stringParser.flatten().parse(valueStr).get().toString();
@@ -134,11 +131,9 @@ public class Non {
                             newNonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
                         }
                         i++;
-                        line = lines[i];
                     }
                 } else {
                     i--;
-                    line = lines[i];
                 }
                 nonDefs.addNonObject(newNonObj);
             }

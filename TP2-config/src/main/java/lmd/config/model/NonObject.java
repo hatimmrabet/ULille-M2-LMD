@@ -36,7 +36,14 @@ public class NonObject {
     }
 
     public void addField(String name, Field value) {
-        fields.add(value);
+        this.fields.stream().filter(f -> f.getName().equals(name)).findFirst().ifPresentOrElse(f -> {
+            // if exists, replace
+            this.fields.remove(f);
+            this.fields.add(value);
+        }, () -> {
+            // if not exists, add
+            this.fields.add(value);
+        });
     }
 
 
