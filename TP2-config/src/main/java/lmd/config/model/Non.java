@@ -88,7 +88,7 @@ public class Non {
                 }
                 nonDefs.addNonObject(nonObj);
             }
-            // check if is instance
+            // check if isInstance
             if (instanceParser.parse(line).isSuccess())
             {
                 String instanceStr = instanceParser.flatten().parse(line).get().toString();
@@ -99,18 +99,13 @@ public class Non {
                 NonObject newNonObj = new NonObject();
                 newNonObj.setName(idStr);
                 NonObject superObj = nonDefs.getNonObject(instanceName);
+                // creation à partir de l'objet parent
                 for(Field field : superObj.getfields()) {
                     if(field instanceof DotField) {
                         DotField dotField = (DotField) field;
                         DotField newDotField = new DotField();
                         newDotField.setName(dotField.getName());
                         newDotField.setValue(returnValue(superObj, dotField, idStr));
-                        // for(Field subField : superObj.getfields()) {
-                        //     if(("."+subField.getName()).equals(dotField.getValue())) {
-                        //         newDotField.setValue(subField.getValue());
-                        //         break;
-                        //     }
-                        // }
                         newNonObj.addField(field.getName(), newDotField);
                     }
                     if(field instanceof AtField) {
@@ -120,6 +115,30 @@ public class Non {
                         newAtField.setValue(idStr);
                         newNonObj.addField(field.getName(), newAtField);
                     }
+                }
+                // verifier s'il y a des champs à modifier apres
+                i++;
+                System.out.println("===> "+lines[i]);
+                line = lines[i];
+                if(line.startsWith(".")) {
+                    while (i < lines.length - 1 && line.startsWith(".")) {
+                        // creer les fields
+                        String fieldStr = fieldParser.flatten().parse(line).get().toString();
+                        fieldStr = fieldStr.replace(".","");
+                        String valueStr = line.substring(fieldStr.length() + 1).trim();
+                        System.out.println("===> "+fieldStr+" : "+valueStr);
+                        // switch parser based on field value
+                        if (stringParser.parse(valueStr).isSuccess()) {
+                            valueStr = stringParser.flatten().parse(valueStr).get().toString();
+                            valueStr = valueStr.replaceAll("\'", "");
+                            newNonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
+                        }
+                        i++;
+                        line = lines[i];
+                    }
+                } else {
+                    i--;
+                    line = lines[i];
                 }
                 nonDefs.addNonObject(newNonObj);
             }
