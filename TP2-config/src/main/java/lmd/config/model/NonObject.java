@@ -46,6 +46,10 @@ public class NonObject {
         });
     }
 
+    public Field getField(String name) {
+        return this.fields.stream().filter(f -> f.getName().equals(name)).findFirst().orElse(null);
+    }
+
 
 
 }

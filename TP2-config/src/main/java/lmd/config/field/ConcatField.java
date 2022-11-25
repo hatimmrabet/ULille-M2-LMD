@@ -1,17 +1,43 @@
 package lmd.config.field;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConcatField implements Field {
+
+    private String name;
+    private String value;
+    private List<Field> fields = new ArrayList<>();
+
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public String getValue() {
-        // TODO Auto-generated method stub
-        return null;
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
+    }
+
+    public void addField(Field field) {
+        this.fields.add(field);
     }
     
 }
