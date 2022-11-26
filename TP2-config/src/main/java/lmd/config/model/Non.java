@@ -9,6 +9,7 @@ import java.util.List;
 import org.petitparser.parser.Parser;
 import org.petitparser.parser.primitive.CharacterParser;
 
+import lmd.config.exception.NonFieldException;
 import lmd.config.field.AtField;
 import lmd.config.field.ConcatField;
 import lmd.config.field.DotField;
@@ -242,10 +243,25 @@ public class Non {
         return concatField;
     }
     
+    public String id() {
+        return this.getId();
+    }
     
-    public String get(String champs) {
-        // TODO implement
-        return null;
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<Field> fields) {
+        this.fields = fields;
+    }
+
+    public String get(String champ) throws NonFieldException {
+        for (Field field : this.getFields()) {
+            if (field.getName().equals(champ)) {
+                return field.getValue();
+            }
+        }
+        throw new NonFieldException(champ);
     }
 
 }
