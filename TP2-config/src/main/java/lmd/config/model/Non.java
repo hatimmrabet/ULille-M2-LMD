@@ -77,42 +77,38 @@ public class Non {
                         nonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
                     }
                     else if(fieldParser.end("\n").parse(valueStr).isSuccess()) {
-                        // valueStr = valueStr.replace(".","");
                         DotField dotField = new DotField();
                         dotField.setName(fieldStr);
                         dotField.setValue(valueStr);
                         nonObj.addField(fieldStr, dotField);
                     } else if(arobaseParser.end("\n").parse(valueStr).isSuccess()) {
-                        // valueStr = valueStr.replace("@", idStr);
                         AtField atField = new AtField();
                         atField.setName(fieldStr);
                         atField.setValue(valueStr);
                         nonObj.addField(fieldStr, atField);
                     } else if(concatParser.parse(valueStr).isSuccess()) {
-                        System.out.println("concat => "+ concatParser.parse(valueStr).get().toString());
                         ConcatField concatField = new ConcatField();
                         concatField.setName(fieldStr);
                         concatField.setValue(valueStr);
                         List<Object> champs = concatParser.parse(valueStr).get();
                         // enlever les espaces
                         champs = champs.stream().filter(c -> !c.toString().trim().isEmpty()).toList();
-                        System.out.println("champs => "+ champs);
                         // parcourir les champs
                         for (Object champ : champs) {
                             String champStr = champ.toString();
                             if (stringParser.parse(champStr).isSuccess()) {
-                                valueStr = stringParser.flatten().parse(champStr).get().toString();
+                                StringField stringField = new StringField();
+                                valueStr = stringParser.parse(champStr).get().toString();
                                 valueStr = valueStr.replaceAll("\'", "");
-                                concatField.addField(concatField);
+                                stringField.setValue(valueStr);
+                                concatField.addField(stringField);
                             }
                             else if(fieldParser.parse(champStr).isSuccess()) {
-                                // valueStr = valueStr.replace(".","");
                                 DotField dotField = new DotField();
                                 dotField.setName(fieldStr);
                                 dotField.setValue(champStr);
                                 concatField.addField(dotField);
                             } else if(arobaseParser.parse(champStr).isSuccess()) {
-                                // valueStr = valueStr.replace("@", idStr);
                                 AtField atField = new AtField();
                                 atField.setName(fieldStr);
                                 atField.setValue(champStr);
@@ -121,7 +117,6 @@ public class Non {
                                 String[] parts = champStr.split("\\.");
                                 NonObject superObj = nonDefs.getNonObject(parts[0]);
                                 Field field = superObj.getField(parts[1]);
-                                // valueStr = field.getValue();
                                 concatField.addField(field);
                             }
                         }
@@ -159,6 +154,41 @@ public class Non {
                         newAtField.setName(atField.getName());
                         newAtField.setValue(idStr);
                         newNonObj.addField(field.getName(), newAtField);
+                    }
+                    if(field instanceof ConcatField) {
+                        ConcatField concatField = (ConcatField) field;
+                        ConcatField newConcatField = new ConcatField();
+                        newConcatField.setName(concatField.getName());
+                        newConcatField.setValue(concatField.getValue());
+                        for(Field subField : concatField.getFields()) {
+                            if(subField instanceof DotField) {
+                                DotField dotField = (DotField) subField;
+                                DotField newDotField = new DotField();
+                                newDotField.setName(dotField.getName());
+                                newDotField.setValue(returnValue(superObj, dotField, idStr));
+                                newConcatField.addField(newDotField);
+                            }
+                            if(subField instanceof AtField) {
+                                AtField atField = (AtField) subField;
+                                AtField newAtField = new AtField();
+                                newAtField.setName(atField.getName());
+                                newAtField.setValue(idStr);
+                                newConcatField.addField(newAtField);
+                            }
+                            if(subField instanceof StringField) {
+                                StringField stringField = (StringField) subField;
+                                StringField newStringField = new StringField();
+                                newStringField.setName(stringField.getName());
+                                newStringField.setValue(stringField.getValue());
+                                newConcatField.addField(newStringField);
+                            }
+                        }
+                        String concatValue = "";
+                        for(Field subField : newConcatField.getFields()) {
+                            concatValue += subField.getValue();
+                        }
+                        newConcatField.setValue(concatValue);
+                        newNonObj.addField(field.getName(), newConcatField);
                     }
                 }
                 // verifier s'il y a des champs à modifier apres
