@@ -27,7 +27,7 @@ public class NonObject {
         this.name = name;
     }
 
-    public List<Field> getfields() {
+    public List<Field> getFields() {
         return fields;
     }
 

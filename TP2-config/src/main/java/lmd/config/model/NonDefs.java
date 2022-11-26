@@ -3,6 +3,8 @@ package lmd.config.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import lmd.config.exception.NonObjectException;
+
 public class NonDefs {
 
     private List<NonObject> nonObjects;
@@ -32,11 +34,13 @@ public class NonDefs {
         nonObjects.add(nonObject);
     }
 
-    public Non at(String id) {
-        Non non = new Non();
-        non.setId(id);
-
-        return non;
+    public Non at(String id) throws NonObjectException {
+        for (NonObject nonObj : nonObjects) {
+            if (nonObj.getName().equals(id)) {
+                return new Non(nonObj);
+            }
+        }
+        throw new NonObjectException(id);
     }
     
 }

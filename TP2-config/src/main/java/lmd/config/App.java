@@ -13,7 +13,7 @@ public class App
         NonDefs nonDefs = Non.fromString(content);
         for(NonObject nonObj : nonDefs.getNonObjects()) {
             System.out.println(nonObj.getName());
-            for(Field field : nonObj.getfields()) {
+            for(Field field : nonObj.getFields()) {
                 System.out.println(field.getName() + " | " + field.getValue());
             }
         }
