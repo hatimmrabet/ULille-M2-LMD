@@ -37,9 +37,8 @@ public class Non {
     }
 
     public static NonDefs fromString(String content) {
-        NonDefs nonDefs = new NonDefs();
-        ParsingManager.parse(nonDefs, content);
-        return nonDefs;
+        ParsingManager pm = new ParsingManager(content);
+        return pm.parse();
     }
 
     public String get(String champ) throws NonFieldException {

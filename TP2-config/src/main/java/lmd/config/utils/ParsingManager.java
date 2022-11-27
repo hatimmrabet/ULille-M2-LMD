@@ -15,6 +15,7 @@ import static org.petitparser.parser.primitive.CharacterParser.noneOf;
 import static org.petitparser.parser.primitive.CharacterParser.of;
 import static org.petitparser.parser.primitive.CharacterParser.word;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParsingManager {
@@ -34,47 +35,27 @@ public class ParsingManager {
     static Parser concatParser = fieldParser
             .or(stringParser, arobaseParser, externFieldParser, CharacterParser.whitespace()).plus();
 
-    public static void parse(NonDefs nonDefs, String content) {
-        String[] lines = content.split("\n");
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
+    String[] lines;
+    int index;
+    NonDefs nonDefs ;
+
+    public ParsingManager(String content) {
+        this.lines = content.split("\n");
+        this.index = 0;
+        this.nonDefs = new NonDefs();
+    }
+
+    public NonDefs parse() {
+        for (index = 0; index < lines.length; index++) {
+            String line = lines[index];
             // check if id
             if (idParser.parse(line).isSuccess()) {
                 String idStr = idParser.flatten().parse(line).get().toString();
                 idStr = idStr.replace(":", "");
                 // creation object
-                NonObject nonObj = new NonObject();
-                nonObj.setName(idStr);
-                i++;
-                while (i < lines.length && lines[i].startsWith(".")) {
-                    line = lines[i];
-                    // creer les fields
-                    String fieldStr = fieldParser.parse(line).get().toString();
-                    fieldStr = fieldStr.replace(".", "");
-                    String valueStr = line.substring(fieldStr.length() + 1).trim();
-                    // switch parser based on field value
-                    if (stringParser.end("\n").parse(valueStr).isSuccess()) {
-                        valueStr = stringParser.parse(valueStr).get().toString();
-                        valueStr = valueStr.replaceAll("\'", "");
-                        nonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
-                    } else if (fieldParser.end("\n").parse(valueStr).isSuccess()) {
-                        DotField dotField = new DotField();
-                        dotField.setName(fieldStr);
-                        dotField.setValue(valueStr);
-                        nonObj.addField(fieldStr, dotField);
-                    } else if (arobaseParser.end("\n").parse(valueStr).isSuccess()) {
-                        AtField atField = new AtField();
-                        atField.setName(fieldStr);
-                        atField.setValue(valueStr);
-                        nonObj.addField(fieldStr, atField);
-                    } else if (concatParser.parse(valueStr).isSuccess()) {
-                        nonObj.addField(fieldStr, creerConcatField(fieldStr, valueStr, nonDefs));
-                    }
-                    // else {
-                    // System.out.println("Error parsing field : !!!!!!!!");
-                    // }
-                    i++;
-                }
+                NonObject nonObj = new NonObject(idStr);
+                addFieldsToObject(nonObj);
+                // add object to nonDefs
                 nonDefs.addNonObject(nonObj);
             }
             // check if isInstance
@@ -84,34 +65,34 @@ public class ParsingManager {
                 String[] instanceStrSplit = instanceStr.split(" ");
                 String idStr = instanceStrSplit[0];
                 String instanceName = instanceStrSplit[1];
+                // objet parent
                 NonObject superObj = nonDefs.getNonObject(instanceName);
+                // instance object
                 NonObject newNonObj = creerInstance(superObj, idStr);
-                // verifier s'il y a des champs à modifier apres
-                i++;
-                if (lines[i].startsWith(".")) {
-                    while (i < lines.length && lines[i].startsWith(".")) {
-                        line = lines[i];
-                        // creer les fields
-                        String fieldStr = fieldParser.flatten().parse(line).get().toString();
-                        fieldStr = fieldStr.replace(".", "");
-                        String valueStr = line.substring(fieldStr.length() + 1).trim();
-                        // switch parser based on field value
-                        if (stringParser.parse(valueStr).isSuccess()) {
-                            valueStr = stringParser.parse(valueStr).get().toString();
-                            valueStr = valueStr.replaceAll("\'", "");
-                            newNonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
-                        }
-                        i++;
-                    }
-                } else {
-                    i--;
-                }
+                // modifier les valeurs du champs de l'instance
+                addFieldsToObject(newNonObj);
                 nonDefs.addNonObject(newNonObj);
             }
         }
+        return this.nonDefs;
     }
 
-    public static String returnValue(NonObject superObj, Field field, String idStr) {
+    public List<String> getNextFieldsList() {
+        List<String> fieldsLines = new ArrayList<>();
+        index++;
+        while(index < lines.length) {
+            if(lines[index].startsWith(".")) {
+                fieldsLines.add(lines[index]);
+            } else {
+                index--;
+                break;
+            }
+            index++;
+        }
+        return fieldsLines;
+    }
+
+    public String returnValue(NonObject superObj, Field field, String idStr) {
         String value = field.getValue();
         if (field instanceof DotField) {
             DotField dotField = (DotField) field;
@@ -134,9 +115,8 @@ public class ParsingManager {
         return value;
     }
 
-    public static NonObject creerInstance(NonObject superObj, String idStr) {
-        NonObject newNonObj = new NonObject();
-        newNonObj.setName(idStr);
+    public NonObject creerInstance(NonObject superObj, String idStr) {
+        NonObject newNonObj = new NonObject(idStr);
         for (Field field : superObj.getFields()) {
             if (field instanceof DotField) {
                 DotField dotField = (DotField) field;
@@ -191,7 +171,7 @@ public class ParsingManager {
         return newNonObj;
     }
 
-    public static ConcatField creerConcatField(String fieldStr, String valueStr, NonDefs nonDefs) {
+    public ConcatField creerConcatField(String fieldStr, String valueStr, NonDefs nonDefs) {
         ConcatField concatField = new ConcatField();
         concatField.setName(fieldStr);
         concatField.setValue(valueStr);
@@ -227,4 +207,30 @@ public class ParsingManager {
         return concatField;
     }
 
+    public void addFieldsToObject(NonObject nonObj)
+    {
+        for(String line : getNextFieldsList()) {
+            String fieldStr = fieldParser.parse(line).get().toString();
+            fieldStr = fieldStr.replace(".", "");
+            String valueStr = line.substring(fieldStr.length() + 1).trim();
+            // switch parser based on field value
+            if (stringParser.end("\n").parse(valueStr).isSuccess()) {
+                valueStr = stringParser.parse(valueStr).get().toString();
+                valueStr = valueStr.replaceAll("\'", "");
+                nonObj.addField(fieldStr, new StringField(fieldStr, valueStr));
+            } else if (fieldParser.end("\n").parse(valueStr).isSuccess()) {
+                DotField dotField = new DotField();
+                dotField.setName(fieldStr);
+                dotField.setValue(valueStr);
+                nonObj.addField(fieldStr, dotField);
+            } else if (arobaseParser.end("\n").parse(valueStr).isSuccess()) {
+                AtField atField = new AtField();
+                atField.setName(fieldStr);
+                atField.setValue(valueStr);
+                nonObj.addField(fieldStr, atField);
+            } else if (concatParser.parse(valueStr).isSuccess()) {
+                nonObj.addField(fieldStr, creerConcatField(fieldStr, valueStr, nonDefs));
+            }
+        }
+    }
 }

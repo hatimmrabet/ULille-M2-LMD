@@ -10,10 +10,6 @@ public class NonObject {
     String name;
     List<Field> fields;
 
-    public NonObject() {
-        fields = new ArrayList<>();
-    }
-
     public NonObject(String name) {
         this.name = name;
         this.fields = new ArrayList<>();
