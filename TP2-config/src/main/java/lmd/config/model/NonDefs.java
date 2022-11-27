@@ -41,5 +41,18 @@ public class NonDefs {
         }
         return new Non(nonObject);
     }
+
+    public String toJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
+        for(NonObject nonObject : nonObjects) {
+            sb.append(nonObject.toJson());
+            sb.append(",\n");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("\n}");
+        return sb.toString();
+
+    }
     
 }

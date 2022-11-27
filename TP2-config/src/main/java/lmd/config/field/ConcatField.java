@@ -39,5 +39,16 @@ public class ConcatField implements Field {
     public void addField(Field field) {
         this.fields.add(field);
     }
+
+    @Override
+    public String toJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"");
+        sb.append(name);
+        sb.append("\":\"");
+        sb.append(value);
+        sb.append("\"");
+        return sb.toString();
+    }
     
 }

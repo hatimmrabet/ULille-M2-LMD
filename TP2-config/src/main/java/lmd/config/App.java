@@ -19,6 +19,7 @@ public class App
                 System.out.println(field.getName() + " | " + field.getValue());
             }
         }
+        System.out.println(nonDefs.toJson());
         // nonDefs.at("student").get("aa");
     }
 }

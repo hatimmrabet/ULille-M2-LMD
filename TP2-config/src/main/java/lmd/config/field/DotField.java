@@ -34,5 +34,16 @@ public class DotField implements Field {
     public void setField(Field field) {
         this.field = field;
     }
+
+    @Override
+    public String toJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"");
+        sb.append(name);
+        sb.append("\":\"");
+        sb.append(value);
+        sb.append("\"");
+        return sb.toString();
+    }
     
 }

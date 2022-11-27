@@ -46,6 +46,18 @@ public class NonObject {
         return this.fields.stream().filter(f -> f.getName().equals(name)).findFirst().orElse(null);
     }
 
-
+    public String toJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\"");
+        sb.append(name);
+        sb.append("\":{");
+        for(Field field : fields) {
+            sb.append(field.toJson());
+            sb.append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("}");
+        return sb.toString();
+    }
 
 }
