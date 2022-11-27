@@ -126,21 +126,20 @@ public class ParsingManager {
                 DotField newDotField = new DotField();
                 newDotField.setName(dotField.getName());
                 newDotField.setValue(returnValue(superObj, dotField, idStr));
-                newNonObj.addField(field.getName(), newDotField);
+                newNonObj.addField(field.getName(), new StringField(field.getName(), newDotField.getValue()));
             }
             if (field instanceof AtField) {
                 AtField atField = (AtField) field;
                 AtField newAtField = new AtField();
                 newAtField.setName(atField.getName());
                 newAtField.setValue(idStr);
-                newNonObj.addField(field.getName(), newAtField);
+                newNonObj.addField(field.getName(), new StringField(field.getName(), newAtField.getValue()));
             }
             if (field instanceof ConcatField) {
                 ConcatField concatField = (ConcatField) field;
                 ConcatField newConcatField = new ConcatField();
                 newConcatField.setName(concatField.getName());
                 newConcatField.setValue(concatField.getValue());
-
                 for (Field subField : concatField.getFields()) {
                     if (subField instanceof DotField) {
                         DotField dotField = (DotField) subField;
@@ -169,7 +168,7 @@ public class ParsingManager {
                     concatValue += subField.getValue();
                 }
                 newConcatField.setValue(concatValue);
-                newNonObj.addField(field.getName(), newConcatField);
+                newNonObj.addField(field.getName(), new StringField(field.getName(), newConcatField.getValue()));
             }
         }
         return newNonObj;

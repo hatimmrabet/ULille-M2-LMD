@@ -19,8 +19,9 @@ public class App
                 System.out.println(field.getName() + ": " + field.getValue());
             }
         }
-        System.out.println("--------------------");
+        // System.out.println("--------------------");
         // System.out.println(nonDefs.toJson());
+        System.out.println("--------------------");
         System.out.println(nonDefs.toNon());
     }
 }
