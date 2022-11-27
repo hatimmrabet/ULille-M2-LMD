@@ -8,6 +8,8 @@ import lmd.config.field.Field;
 public class NonObject {
 
     String name;
+    boolean isSuperObject;
+    String superObjectName;
     List<Field> fields;
 
     public NonObject(String name) {
@@ -23,8 +25,28 @@ public class NonObject {
         this.name = name;
     }
 
+    public boolean getIsSuperObject() {
+        return isSuperObject;
+    }
+
+    public String getSuperObjectName() {
+        return superObjectName;
+    }
+
+    public void setSuperObjectName(String superObjectName) {
+        this.superObjectName = superObjectName;
+    }
+
+    public void setisSuperObject(boolean isSuperObject) {
+        this.isSuperObject = isSuperObject;
+    }
+
     public List<Field> getFields() {
         return fields;
+    }
+    
+    public Field getField(String name) {
+        return this.fields.stream().filter(f -> f.getName().equals(name)).findFirst().orElse(null);
     }
 
     public void setFilds(List<Field> fields) {
@@ -42,9 +64,6 @@ public class NonObject {
         });
     }
 
-    public Field getField(String name) {
-        return this.fields.stream().filter(f -> f.getName().equals(name)).findFirst().orElse(null);
-    }
 
     public String toJson() {
         StringBuilder sb = new StringBuilder();
@@ -57,6 +76,19 @@ public class NonObject {
         }
         sb.deleteCharAt(sb.length() - 1);
         sb.append("}");
+        return sb.toString();
+    }
+
+    public String toNon() {
+        StringBuilder sb = new StringBuilder();
+        if(isSuperObject) {
+            sb.append(name+":\n");
+        } else {
+            sb.append(name+": "+superObjectName+"\n");
+        }
+        for(Field field : fields) {
+            sb.append(field.toNon());
+        }
         return sb.toString();
     }
 

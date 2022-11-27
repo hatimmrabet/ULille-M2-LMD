@@ -50,5 +50,12 @@ public class ConcatField implements Field {
         sb.append("\"");
         return sb.toString();
     }
+
+    @Override
+    public String toNon() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("." + name + " " + value + "\n");
+        return sb.toString();
+    }
     
 }

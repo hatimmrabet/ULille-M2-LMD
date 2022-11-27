@@ -54,5 +54,13 @@ public class NonDefs {
         return sb.toString();
 
     }
+
+    public String toNon() {
+        StringBuilder sb = new StringBuilder();
+        for(NonObject nonObject : nonObjects) {
+            sb.append(nonObject.toNon());
+        }
+        return sb.toString();
+    }
     
 }

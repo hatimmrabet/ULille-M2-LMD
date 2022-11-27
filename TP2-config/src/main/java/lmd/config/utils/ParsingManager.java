@@ -54,6 +54,7 @@ public class ParsingManager {
                 idStr = idStr.replace(":", "");
                 // creation object
                 NonObject nonObj = new NonObject(idStr);
+                nonObj.setisSuperObject(true);
                 addFieldsToObject(nonObj);
                 // add object to nonDefs
                 nonDefs.addNonObject(nonObj);
@@ -69,6 +70,8 @@ public class ParsingManager {
                 NonObject superObj = nonDefs.getNonObject(instanceName);
                 // instance object
                 NonObject newNonObj = creerInstance(superObj, idStr);
+                newNonObj.setisSuperObject(false);
+                newNonObj.setSuperObjectName(instanceName);
                 // modifier les valeurs du champs de l'instance
                 addFieldsToObject(newNonObj);
                 nonDefs.addNonObject(newNonObj);
@@ -137,6 +140,7 @@ public class ParsingManager {
                 ConcatField newConcatField = new ConcatField();
                 newConcatField.setName(concatField.getName());
                 newConcatField.setValue(concatField.getValue());
+
                 for (Field subField : concatField.getFields()) {
                     if (subField instanceof DotField) {
                         DotField dotField = (DotField) subField;

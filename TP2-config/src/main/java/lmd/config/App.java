@@ -16,10 +16,11 @@ public class App
         for(NonObject nonObj : nonDefs.getNonObjects()) {
             System.out.println(nonObj.getName());
             for(Field field : nonObj.getFields()) {
-                System.out.println(field.getName() + " | " + field.getValue());
+                System.out.println(field.getName() + ": " + field.getValue());
             }
         }
-        System.out.println(nonDefs.toJson());
-        // nonDefs.at("student").get("aa");
+        System.out.println("--------------------");
+        // System.out.println(nonDefs.toJson());
+        System.out.println(nonDefs.toNon());
     }
 }
