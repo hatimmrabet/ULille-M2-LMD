@@ -35,12 +35,11 @@ public class NonDefs {
     }
 
     public Non at(String id) throws NonObjectException {
-        for (NonObject nonObj : nonObjects) {
-            if (nonObj.getName().equals(id)) {
-                return new Non(nonObj);
-            }
+        NonObject nonObject = getNonObject(id);
+        if(nonObject == null) {
+            throw new NonObjectException(id);
         }
-        throw new NonObjectException(id);
+        return new Non(nonObject);
     }
     
 }
